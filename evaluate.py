@@ -42,6 +42,9 @@ def run_evaluation(examples, conn):
 )
     
     results = []
+
+    total_input_tokens = 0
+    total_output_tokens = 0
     
     for ex in examples:
         try:
@@ -67,6 +70,14 @@ def run_evaluation(examples, conn):
             )
             choice = choice_response.choices["category"].choice
             confidence = choice_response.choices["category"].confidence
+            input_tokens = choice_response.usage.input_tokens
+            output_tokens = choice_response.usage.output_tokens
+
+            #print(f"[{ex['id']}] Input tokens: {input_tokens}, Output tokens: {output_tokens}")
+
+        # Accumulate for the final total
+            total_input_tokens += input_tokens
+            total_output_tokens += output_tokens
             
             # Determine correctness
             # Noul: correct if prob >= 0.5 matches ground truth
@@ -100,10 +111,10 @@ def run_evaluation(examples, conn):
             continue
     
     conn.commit()
-    return results
+    return results,total_input_tokens, total_output_tokens
 
 
-def print_summary(results):
+def print_summary(results,total_input_tokens, total_output_tokens):
     """Print evaluation summary."""
     total = len(results)
     noul_acc = sum(r["noul_correct"] for r in results) / total
@@ -118,6 +129,13 @@ def print_summary(results):
     print(f"Choice accuracy:       {choice_acc:.2%}")
     print(f"Average confidence:    {avg_conf:.3f}")
     print(f"{'='*50}\n")
+    print(f"Total input tokens:  {total_input_tokens:,}")
+    print(f"Total output tokens: {total_output_tokens:,}")
+    print(f"Avg input per call:  {total_input_tokens/total:.0f}")
+        
+    # Cost calculation (official pricing: $0.042 per million input, output free)
+    cost = (total_input_tokens / 1000000) * 0.042
+    print(f"Estimated cost:      ${cost:.6f}")
 
 
 def run_analysis(conn):
@@ -153,9 +171,9 @@ def main():
     conn = setup_database()
     
     print("Running evaluation...")
-    results = run_evaluation(examples, conn)
+    results,total_input_tokens, total_output_tokens = run_evaluation(examples, conn)
     
-    print_summary(results)
+    print_summary(results,total_input_tokens, total_output_tokens)
     
     # Run analysis (this closes the connection internally)
     run_analysis(conn)

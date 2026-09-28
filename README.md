@@ -16,9 +16,13 @@ Independent evaluation of Jev's calibrated probabilities.
 - At probability 0.9, Jev was correct X% of the time
 - At probability 0.5, Jev was correct Y% of the time
 - <img width="897" height="955" alt="image" src="https://github.com/user-attachments/assets/c3b0b00a-ac80-4c1b-8457-9eb835680824" />
+- <img width="282" height="447" alt="report" src="https://github.com/user-attachments/assets/6b3e043d-7df4-4dce-907a-3a785589faeb" />
+
+
+
 
 ## Cost
-Total evaluation cost: $0 (190+ examples)[New SignUp was paused due to immense demand then waitlist for typsafe.ai same for vercel.ai gateway]
+Total evaluation cost: $0.004762 (190+ examples)[New SignUp was paused due to immense demand then waitlist for typsafe.ai same for vercel.ai gateway]
 
 ## Reproduce
 TypeSafeClient(base_url="https://api.typesafe.pro",api_key="anonymous")

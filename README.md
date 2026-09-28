@@ -25,8 +25,6 @@ Independent evaluation of Jev's calibrated probabilities.
 Total evaluation cost: $0.004762 (190+ examples)[New SignUp was paused due to immense demand then waitlist for typsafe.ai same for vercel.ai gateway]
 
 ## Reproduce
-TypeSafeClient(base_url="https://api.typesafe.pro",api_key="anonymous")
-python evaluate.py
-python app.py
-python calibration.py
-python app.py
+- TypeSafeClient(base_url="https://api.typesafe.pro",api_key="anonymous")
+- python evaluate.py
+- python app.py

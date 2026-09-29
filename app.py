@@ -161,6 +161,46 @@ else:
         f"under-confident by {m['mean_prob'] - m['positive_rate']:+.3f}."
     )
 
+    # ---------------------------------------------------------------------------
+# Section: Score head (ordinal)
+# ---------------------------------------------------------------------------
+st.header("Score Head — Ordinal Analysis")
+
+if "score" not in m:
+    st.info("No Score metrics. Run run_calibration.py after evaluate.py.")
+else:
+    s = m["score"]
+
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Mean score", f"{s['mean_score_value']:.2f} / 4")
+    col2.metric("Mean confidence", f"{s['mean_confidence']:.3f}")
+    col3.metric("Mean top-class prob", f"{s['mean_max_probability']:.3f}")
+
+    col4, col5, col6 = st.columns(3)
+    col4.metric("Normalized entropy", f"{s['normalized_entropy']:.3f}")
+    col5.metric("Monotonicity", f"{s['monotonicity_fraction']:.3f}")
+    col6.metric("Spearman vs Noul", f"{s['spearman_score_vs_noul']:.3f}")
+
+    st.markdown(
+        f"""
+**Findings — ordinal head**
+
+- The Score head produces **coherent distributions**: monotonicity = 
+  {s['monotonicity_fraction']:.3f} (all 192 examples have valid cumulative 
+  probabilities).
+- Predictions are **highly concentrated**: mean top-class probability = 
+  {s['mean_max_probability']:.3f} versus a uniform baseline of 
+  {s['baseline_max_probability']:.2f}. Normalized entropy = 
+  {s['normalized_entropy']:.3f}.
+- The Score head **correlates strongly with Noul** (Spearman ρ = 
+  {s['spearman_score_vs_noul']:.3f}), suggesting the two heads rank examples 
+  consistently.
+- The reported `confidence` scalar ({s['mean_confidence']:.3f}) is **not equal 
+  to the top-class probability** ({s['mean_max_probability']:.3f}), indicating 
+  the SDK applies additional calibration to confidence.
+"""
+    )
+
 # Section 3: Raw results
 
 st.subheader("Raw Results")

@@ -15,16 +15,6 @@ def setup_database(db_path=DB_PATH):
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
     
-    #c.execute('''CREATE TABLE IF NOT EXISTS results
-                 #(id INTEGER PRIMARY KEY,
-                 #state TEXT,
-                 #question TEXT,
-                 #jev_prob REAL,
-                 #confidence REAL,
-                 #choice TEXT,
-                 #ground_truth INTEGER,
-                 #correct INTEGER)''')
-    ''''''
     c.execute('''CREATE TABLE IF NOT EXISTS results
                  (id INTEGER PRIMARY KEY,
                   state TEXT,

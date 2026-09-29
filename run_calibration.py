@@ -1,15 +1,5 @@
 # run_calibration.py
-"""
-Standalone calibration driver.
 
-Reads Noul probabilities (jev_prob) and ground truth from jev_eval.db,
-computes ECE + Brier before and after:
-  (a) temperature scaling (single scalar, global)
-  (b) isotonic regression (non-parametric, monotone)
-
-Uses a held-out 50/50 split so calibrators are NOT fit on the eval data.
-Writes calibration_metrics.json for the Streamlit dashboard.
-"""
 import json
 import os
 import sqlite3

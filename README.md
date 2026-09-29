@@ -96,7 +96,6 @@ Total evaluation cost: $0.004762 (190+ examples)[New SignUp was paused due to im
 
 ## Reproduce
 - TypeSafeClient(base_url="https://api.typesafe.pro",api_key="anonymous")
-- python evaluate.py          
-- python run_calibration.py
+- python evaluate.py
 - python run_calibration.py 
 - streamlit 

@@ -16,7 +16,6 @@ Independent evaluation of Jev's calibrated probabilities.
 - At probability 0.9, Jev was correct X% of the time
 - At probability 0.5, Jev was correct Y% of the time
 - <img width="532" height="609" alt="analysis" src="https://github.com/user-attachments/assets/756bb528-7c39-4928-80bd-557c6d06bf95" />
-- <img width="1302" height="291" alt="result" src="https://github.com/user-attachments/assets/b93acf8a-95be-4afc-8f72-a8a6c6776048" />
 - <img width="495" height="577" alt="Calibration" src="https://github.com/user-attachments/assets/9979d824-c43b-4026-9928-7577ac750357" />
 
 

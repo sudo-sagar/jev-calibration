@@ -14,6 +14,17 @@ def setup_database(db_path=DB_PATH):
     """Create the results table with confidence column."""
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
+    
+    #c.execute('''CREATE TABLE IF NOT EXISTS results
+                 #(id INTEGER PRIMARY KEY,
+                 #state TEXT,
+                 #question TEXT,
+                 #jev_prob REAL,
+                 #confidence REAL,
+                 #choice TEXT,
+                 #ground_truth INTEGER,
+                 #correct INTEGER)''')
+    ''''''
     c.execute('''CREATE TABLE IF NOT EXISTS results
                  (id INTEGER PRIMARY KEY,
                   state TEXT,
@@ -21,8 +32,10 @@ def setup_database(db_path=DB_PATH):
                   jev_prob REAL,
                   confidence REAL,
                   choice TEXT,
+                  choice_probs TEXT,
                   ground_truth INTEGER,
-                  correct INTEGER)''')
+                  correct INTEGER,
+                  noul_correct INTEGER)''')
     conn.commit()
     return conn
 
@@ -70,6 +83,15 @@ def run_evaluation(examples, conn):
             )
             choice = choice_response.choices["category"].choice
             confidence = choice_response.choices["category"].confidence
+            choice_probs = choice_response.choices["category"].probabilities
+            # TEMP DEBUG — inspect the Choice object once
+            if not hasattr(run_evaluation, "_printed"):
+                obj = choice_response.choices["category"]
+                #print("CHOICE OBJ TYPE:", type(obj))
+                #print("CHOICE ATTRS:",
+                [a for a in dir(obj) if not a.startswith("_")]
+                #print("CHOICE __dict__:", getattr(obj, "__dict__", None))
+                run_evaluation._printed = True
             input_tokens = choice_response.usage.input_tokens
             output_tokens = choice_response.usage.output_tokens
 
@@ -85,19 +107,29 @@ def run_evaluation(examples, conn):
             # Choice: correct if choice matches ground truth
             choice_correct = int((choice == "yes") == bool(ex["ground_truth"]))
             
+            #c.execute(
+            #   """INSERT OR REPLACE INTO results
+             #      (id, state, question, jev_prob, confidence, choice,  ground_truth, correct)
+              #     VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+               # (ex["id"], ex["state"], ex["question"],
+                # jev_prob, confidence, choice,  ex["ground_truth"], choice_correct)
+            #)
             c.execute(
                 """INSERT OR REPLACE INTO results
-                   (id, state, question, jev_prob, confidence, choice,  ground_truth, correct)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                   (id, state, question, jev_prob, confidence, choice,
+                    choice_probs, ground_truth, correct, noul_correct)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (ex["id"], ex["state"], ex["question"],
-                 jev_prob, confidence, choice,  ex["ground_truth"], choice_correct)
+                 jev_prob, confidence, choice,
+                 json.dumps(choice_probs),
+                 ex["ground_truth"], choice_correct, noul_correct)
             )
-            
             results.append({
                 "id": ex["id"],
                 "jev_prob": jev_prob,
                 "confidence": confidence,
                 "choice": choice,
+                "choice_probs": choice_probs,
                 "ground_truth": ex["ground_truth"],
                 "noul_correct": noul_correct,
                 "choice_correct": choice_correct

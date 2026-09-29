@@ -2,7 +2,7 @@ import json
 import sqlite3
 import os
 
-from typesafe_sdk import Noul, Choice, TypeSafeClient
+from typesafe_sdk import Noul, Choice, Score, TypeSafeClient
 from confidence_analysis import compute_confidence
 from calibration import compute_calibration
 
@@ -33,6 +33,9 @@ def setup_database(db_path=DB_PATH):
                   confidence REAL,
                   choice TEXT,
                   choice_probs TEXT,
+                  score_value REAL,
+                  score_conf REAL,
+                  score_probs TEXT,
                   ground_truth INTEGER,
                   correct INTEGER,
                   noul_correct INTEGER)''')
@@ -92,6 +95,33 @@ def run_evaluation(examples, conn):
                 [a for a in dir(obj) if not a.startswith("_")]
                 #print("CHOICE __dict__:", getattr(obj, "__dict__", None))
                 run_evaluation._printed = True
+            # TEMP: probe Score head
+                        # Score question: ordinal rating with full distribution
+            score_response = client.system_one(
+                state=ex["state"],
+                questions={
+                    "rating": Score(
+                        instructions=ex["question"],
+                        criteria=[
+                            "Not at all - completely unrelated or not applicable",
+                            "Slightly - tangentially related",
+                            "Moderately - clearly related but not strongly",
+                            "Strongly - directly on topic",
+                            "Very strongly - the central subject of the message",
+                        ],
+                    )
+                }
+            )
+            score_value = score_response.scores["rating"].score
+            score_conf = score_response.scores["rating"].confidence
+            score_probs = score_response.scores["rating"].probabilities
+        
+            if not hasattr(run_evaluation, "_score_printed"):
+                obj = score_response.scores["rating"]
+                #print("SCORE OBJ TYPE:", type(obj))
+                #print("SCORE ATTRS:", [a for a in dir(obj) if not a.startswith("_")])
+                #print("SCORE __dict__:", getattr(obj, "__dict__", None))
+                run_evaluation._score_printed = True
             input_tokens = choice_response.usage.input_tokens
             output_tokens = choice_response.usage.output_tokens
 
@@ -117,11 +147,13 @@ def run_evaluation(examples, conn):
             c.execute(
                 """INSERT OR REPLACE INTO results
                    (id, state, question, jev_prob, confidence, choice,
-                    choice_probs, ground_truth, correct, noul_correct)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    choice_probs, score_value, score_conf, score_probs,
+                    ground_truth, correct, noul_correct)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (ex["id"], ex["state"], ex["question"],
                  jev_prob, confidence, choice,
                  json.dumps(choice_probs),
+                 score_value, score_conf, json.dumps(score_probs),
                  ex["ground_truth"], choice_correct, noul_correct)
             )
             results.append({
@@ -132,7 +164,11 @@ def run_evaluation(examples, conn):
                 "choice_probs": choice_probs,
                 "ground_truth": ex["ground_truth"],
                 "noul_correct": noul_correct,
-                "choice_correct": choice_correct
+                "choice_correct": choice_correct,
+                "score_value": score_value,
+                "score_conf": score_conf,
+                "score_probs": score_probs,
+                
             })
             
             if (len(results)) % 50 == 0:

@@ -17,6 +17,7 @@ import sqlite3
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from score_calibration import analyze as analyze_score
 from sklearn.isotonic import IsotonicRegression
 from calibration import multiclass_ece, brier_multiclass
 
@@ -162,6 +163,17 @@ def main():
     print(f"multiclass Brier       = {brier_choice:.4f}")
     print(f"accuracy               = {acc_choice:.4f}")
     print(f"mean top-class conf    = {mean_conf_choice:.4f}")
+        # ---------- Score (ordinal) ----------
+    score_metrics = analyze_score()
+    print()
+    print("=" * 60)
+    print("Score head (ordinal)")
+    print("=" * 60)
+    for k, v in score_metrics.items():
+        if isinstance(v, float):
+            print(f"  {k:32s} = {v:.4f}")
+        else:
+            print(f"  {k:32s} = {v}")
 
     # ---------- report ----------
     print()
@@ -206,6 +218,7 @@ def main():
         "choice_accuracy": acc_choice,
         "choice_mean_confidence": mean_conf_choice,
         "choice_bins": bins_choice,
+        "score": score_metrics
     }
 
     with open(OUT_PATH, "w", encoding="utf-8") as f:

@@ -57,6 +57,7 @@ differs.
 
 ## Cost
 <img width="299" height="488" alt="eval" src="https://github.com/user-attachments/assets/6c28324b-50aa-4542-b23b-4432433cd74e" />
+
 Total evaluation cost: $0.004762 (190+ examples)[New SignUp was paused due to immense demand then waitlist for typsafe.ai same for vercel.ai gateway]
 
 ## Reproduce

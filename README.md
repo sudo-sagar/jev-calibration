@@ -9,13 +9,16 @@ Independent evaluation of Jev's calibrated probabilities.
 - Compared probability bins against actual accuracy
 
 ## Results
-<img width="532" height="609" alt="analysis" src="https://github.com/user-attachments/assets/756bb528-7c39-4928-80bd-557c6d06bf95" />
+- <img width="542" height="187" alt="metrics" src="https://github.com/user-attachments/assets/44da041e-ca12-4577-9bd4-e23c5fa7ae7b" />
+- <img width="1302" height="291" alt="result" src="https://github.com/user-attachments/assets/85f1ee96-3eb1-46fa-aef3-bf1f3a7744a3" />
 
 ## Findings
 - At probability 0.9, Jev was correct X% of the time
 - At probability 0.5, Jev was correct Y% of the time
-- <img width="499" height="554" alt="Calibration" src="https://github.com/user-attachments/assets/d3d643e0-c357-4498-a623-5f5c05bf0874" />
+- <img width="532" height="609" alt="analysis" src="https://github.com/user-attachments/assets/756bb528-7c39-4928-80bd-557c6d06bf95" />
 - <img width="1302" height="291" alt="result" src="https://github.com/user-attachments/assets/b93acf8a-95be-4afc-8f72-a8a6c6776048" />
+- <img width="495" height="577" alt="Calibration" src="https://github.com/user-attachments/assets/9979d824-c43b-4026-9928-7577ac750357" />
+
 
 
 
